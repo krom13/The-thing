@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class Move : MonoBehaviour
 {
@@ -12,20 +13,23 @@ public class Move : MonoBehaviour
     public LayerMask whatIsGround;
     Rigidbody2D rb2D;
 
+    [SerializeField]
+    private int score;
+
     public float move;
 
     // Use this for initialization
     void Start()
     {
         rb2D = GetComponent<Rigidbody2D>();
+        score = 0;
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
          grounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, whatIsGround);
-        if (!grounded)
-            Debug.Log("not graunded");
+        
 
         move = Input.GetAxis("Horizontal");
 
@@ -53,10 +57,27 @@ public class Move : MonoBehaviour
 
         if (Input.GetKey(KeyCode.R))
         {
-            Application.LoadLevel(Application.loadedLevel);
+            SceneManager.LoadScene("main");
         }
 
 
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.name == "dieCollider")
+            SceneManager.LoadScene("main");
+
+        if (collision.gameObject.name == "coin")
+        {
+            score++;
+            Destroy(collision.gameObject);
+        }
+    }
+
+    private void OnGUI()
+    {
+        GUI.Label(new Rect(0, 0, 100, 100), "Coins: " + score.ToString());
     }
 
     void Flip()
