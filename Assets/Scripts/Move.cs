@@ -9,7 +9,7 @@ public class Move : MonoBehaviour
     bool facingRight = true;
     bool grounded = false;
     public Transform groundCheck;
-    public float groundRadius = 0.2f;
+    public float groundRadius = 1f;
     public LayerMask whatIsGround;
     Rigidbody2D rb2D;
 
@@ -65,13 +65,24 @@ public class Move : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.name == "dieCollider")
-            SceneManager.LoadScene("main");
+        
 
         if (collision.gameObject.name == "coin")
         {
             score++;
             Destroy(collision.gameObject);
+        }
+
+        if(collision.gameObject.name == "endLevel") {
+            if (!(GameObject.Find("coin"))) SceneManager.LoadScene("1");
+        }
+
+        if (collision.gameObject.name == "dieCollider" || collision.gameObject.name == "saw")
+        {
+            if (SceneManager.GetActiveScene().name == "1")
+                    SceneManager.LoadScene("1");
+            else
+                SceneManager.LoadScene("main");
         }
     }
 
