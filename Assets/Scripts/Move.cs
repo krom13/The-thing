@@ -11,44 +11,46 @@ public class Move : MonoBehaviour
     public Transform groundCheck;
     public float groundRadius = 1f;
     public LayerMask whatIsGround;
-    Rigidbody2D rb2D;
+    private Rigidbody2D rb2D;
+    private SpriteRenderer sprite;
+    private Animator animator;
 
     [SerializeField]
     private int score;
 
     public float move;
 
-    // Use this for initialization
-    void Start()
+    private CharState State
+    {
+        get { return (CharState)animator.GetInteger("State"); }
+        set { animator.SetInteger("State", (int)value); }
+    }
+
+    private void Awake()
     {
         rb2D = GetComponent<Rigidbody2D>();
         score = 0;
+        sprite = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
+    
 
     // Update is called once per frame
     void FixedUpdate()
     {
-         grounded = Physics2D.OverlapCircle(groundCheck.position, groundRadius, whatIsGround);
-        
-
-        move = Input.GetAxis("Horizontal");
-
+        CheckGround();
     }
 
     void Update()
     {
-        if (grounded && (Input.GetKeyDown("space")))
-        {
-            rb2D.AddForce(new Vector2(0f, jumpForce));
-        }
-        rb2D.velocity = new Vector2(move * maxSpeed, rb2D.velocity.y);
+        State = CharState.Idle;
 
-        if (move > 0 && !facingRight)
-            Flip();
-        else if (move < 0 && facingRight)
-            Flip();
+        
+        if (grounded && Input.GetButtonDown("Jump"))
+            Jump();
 
-
+        if (Input.GetButton("Horizontal"))
+            Run();
 
         if (Input.GetKey(KeyCode.Escape))
         {
@@ -63,21 +65,46 @@ public class Move : MonoBehaviour
 
     }
 
+    private void CheckGround()
+    {
+        
+        grounded = Physics2D.OverlapCircleAll(groundCheck.position, groundRadius, whatIsGround).Length > 0;
+        if (!grounded)
+            State = CharState.Jump;
+    }
+
+    private void Run()
+    {
+        Vector3 direction = transform.right * Input.GetAxis("Horizontal");
+
+        transform.position = Vector2.MoveTowards(transform.position, transform.position + direction, maxSpeed * Time.deltaTime);
+
+        sprite.flipX = direction.x < 0.0f;
+
+        State = CharState.Run;
+    }
+
+    private void Jump()
+    {
+        
+        rb2D.AddForce(new Vector2(0f, jumpForce));
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         
 
-        if (collision.gameObject.name == "coin")
+        if (collision.gameObject.tag == "coin")
         {
             score++;
             Destroy(collision.gameObject);
         }
 
-        if(collision.gameObject.name == "endLevel") {
+        if(collision.gameObject.tag == "endLevel") {
             if (!(GameObject.Find("coin"))) SceneManager.LoadScene("1");
         }
 
-        if (collision.gameObject.name == "dieCollider" || collision.gameObject.name == "saw")
+        if (collision.gameObject.tag == "Die")
         {
             if (SceneManager.GetActiveScene().name == "1")
                     SceneManager.LoadScene("1");
@@ -91,11 +118,12 @@ public class Move : MonoBehaviour
         GUI.Label(new Rect(0, 0, 100, 100), "Coins: " + score.ToString());
     }
 
-    void Flip()
-    {
-        facingRight = !facingRight;
-        Vector3 theScale = transform.localScale;
-        theScale.x *= -1;
-        transform.localScale = theScale;
-    }
+    
+}
+
+public enum CharState
+{
+    Idle,
+    Run,
+    Jump
 }
