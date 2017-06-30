@@ -13,6 +13,6 @@ public class sawScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        transform.Rotate(new Vector3(0f, 0f, -3f));
+        transform.Rotate(new Vector3(0f, 0f, -90f*Time.deltaTime));
     }
 }

@@ -106,10 +106,8 @@ public class Move : MonoBehaviour
 
         if (collision.gameObject.tag == "Die")
         {
-            if (SceneManager.GetActiveScene().name == "1")
-                    SceneManager.LoadScene("1");
-            else
-                SceneManager.LoadScene("main");
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            score = 0;
         }
     }
 
