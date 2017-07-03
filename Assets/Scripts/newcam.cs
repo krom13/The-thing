@@ -7,6 +7,7 @@ public class newcam : MonoBehaviour
     private Vector3 velocity = Vector3.zero;
     public Transform target;
     private Camera camera;
+    
 
     private void Start()
     {
@@ -25,6 +26,5 @@ public class newcam : MonoBehaviour
 
             transform.position = Vector3.SmoothDamp(transform.position, destination, ref velocity, dampTime);
         }
-
     }
 }

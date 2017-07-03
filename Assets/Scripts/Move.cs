@@ -52,10 +52,10 @@ public class Move : MonoBehaviour
         if (Input.GetButton("Horizontal"))
             Run();
 
-        if (Input.GetKey(KeyCode.Escape))
-        {
-            Application.Quit();
-        }
+        //if (Input.GetKey(KeyCode.Escape))
+        //{
+        //    Application.Quit();
+        //}
 
         if (Input.GetKey(KeyCode.R))
         {
@@ -107,7 +107,6 @@ public class Move : MonoBehaviour
         if (collision.gameObject.tag == "Die")
         {
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-            score = 0;
         }
     }
 
